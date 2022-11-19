@@ -90,7 +90,7 @@ PUBG, Disable In-Game Overlays:
 - Discord, Steam, Rivatuner, etc.
 + May prevent some performance issues, for ex. anticheats repeatedly scanning overlays.
 
-PUBG, Disable Replays & Deathcams
+PUBG, Disable Replays & Deathcams:
 + May prevent some performance issues
 
 PUBG, Set Up GSYNC:
@@ -116,7 +116,7 @@ PUBG, Set Up GSYNC:
 - Refresh Rate: Select Highest
 + Provides smoother performance
 
-PUBG, Use DirectX 11
+PUBG, Use DirectX 11:
 + Should provide overall smoother game experience
 
 PUBG, Render Scale tuning: [Experimental, wrongly configured may cause severe performance issues]
@@ -128,7 +128,7 @@ PUBG, Render Scale tuning: [Experimental, wrongly configured may cause severe pe
 2) NVIDIA Control Panel > Manage 3D Settings > Program Settings > Select a program to customise: tslgame.exe > Antialiasing - Mode: Off
 + Mostly a personal preference, but may provide better and "more accurate" image quality due to not using AA.
 
-ISLC For Low-End PCs [Experimental, unclear suitability]
+ISLC For Low-End PCs [Experimental, unclear suitability]:
 - Clears standby ("cache") memory on a timed interval
 - https://www.wagnardsoft.com/forums/viewtopic.php?t=1256
 + May ease stuttering for lower end PCs
@@ -149,13 +149,14 @@ https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=ms
 https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-6.0.10-windows-x64-installer
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
-r.Tonemapper.Sharpen ? 1,3,5,10?
+r.Tonemapper.Sharpen ? 1,3,5,10?:
 Engine.ini:
 [/Script/Engine.RendererSettings]
 r.Tonemapper.Sharpen=1
 
 AA low vs high fps?
 
+Some random oldschool configs:
 [/Script/Engine.RendererSettings]
 r.DefaultFeature.Bloom=False
 r.DefaultFeature.AmbientOcclusion=False
@@ -191,13 +192,14 @@ FrameRateCap=0
 OneFrameThreadLag=1
 
 Inventory screen character render disable?
++ Potentially better performance
 
-Universal Scope Sensitivity
+Universal Scope Sensitivity:
 - Zoom-specific sensitivies are absolutely unintuitive and needs to be configured via config file as in-game rounds off decimals terribly wrong
 - 4x sensitivity is actually for 4.2x (ACOG)
 - Zoom adjustable scopes have unintuitive sensitivities between zoom levels
 
-Scoping Sensitivity
+Scoping Sensitivity:
 - 15x major pixel skips with <22 sens
 - 8x major pixel skips with <13 sens
 
