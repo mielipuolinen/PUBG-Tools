@@ -1,59 +1,62 @@
 PUBG Performance Tweak Guide
-
 [Work-In-Progress]
 
-OS Basic Checklist
+OS Basics Checklist:
+---
 - Stop being a moron, don't skip these
 - Reboot Windows at least every few days
+
 1) Check for Windows updates
-2) Check for GPU driver updates & Do a clean reinstall
+2) Check for GPU driver updates & do a clean reinstall
+- NOTE: Clean reinstall will remove existing game settings
 3) Check for other device drivers (MOBO, UEFI, etc.)
 4) Check OS and PUBG is on SSD with at least 20% free space (absolute minimum 10%)
 - If you need to make space, trim the SSD afterwards (Optimise Drives)
-5) Open CMD as Admin:
-- sfc /scannow
-- dism /Online /Cleanup-Image /RestoreHealth
-- - Run twice both commands, no errors should be left afterwards. Otherwise plan for Windows reinstall.
+5) Run SFC & DISM:
+- Open CMD as Admin and run the following commands TWICE. If errors still left, plan for Windows reinstallation.
+- - sfc /scannow
+- - dism /Online /Cleanup-Image /RestoreHealth
++ This checks the health of Windows system files and tries to repair any issues
 6) Enable Game Mode
 - Search Game Mode
 + This optimizes Windows resource usage during gaming
 7) Disable Xbox Game Bar
 - Search Game Mode > Xbox Game Bar
-+ Unnecessary background service for PUBG
-8) Disable Hardware-accelerated GPU scheduling
++ Disables an unnecessary background service for PUBG
+8) Experiment with Hardware-accelerated GPU scheduling setting
 - Search Graphics Settings
-+ May cause stuttering in PUBG
-9) Disable variable refresh rate
++ May fix some stuttering issues in PUBG
+9) Disable variable refresh rate [ This is experimental and can be skipped ]
 - Search Graphics Settings
-+ Unnecessary compatibility feature for some games
++ Potentially unnecessary compatibility feature for some games
 10) If you use monitor scaling, override DPI scaling for TslGame.exe
 - TslGame.Exe > Right Click: Properties > Compatibility > Change high DPI settings > High DPI scaling override: [x] Override...: Application
-+ May cause performance issues in PUBG
++ May fix some performance issues in PUBG
 11) Disable unnecessary apps at startup
 - Task Manager > Startup > Check apps with status enabled
-+ Unnecessary resource usage, slower boot times
++ May give better overall performance and faster reboots
 12) Set page file size
 - System Properties > Advanced > Performance: Settings... > Virtual Memory: Change...
 - [ ] Automatically manage paging file size for all drives
 - Set no paging files for all drives except C: (click Set everytime you change a setting)
 - If you have 20GB+ RAM and don't run any special high memory usage applications, set C: custom size 4096MB (initial size & maximum size).
 - If you have less than 20GB RAM or run special high memory usage applications, set (x) System managed size.
-+ Often unnecessary virtual memory usage, which is slower than normal memory
++ May help with unnecessary virtual memory usage, which is slower than normal memory
 
 PUBG, Wellbia Anticheat Uninstallation:
 1) Delete C:\Windows\xhunter1.sys
 2) Delete C:\Program Files\Common Files\Uncheater
 3) Find and delete registry entries with keywords "xhunter" and "ucldr"
-4) Block from reinstalling itself:
+4) Block Wellbia from reinstalling itself:
 - NOTE: This doesn't work on Windows Home editions. If you have one, go upgrade please. You can find a key from any key shop. Otherwise Enable UAC and at the start of the game always disallow Wellbia prompt.
 - Local Group Policy Editor > Computer Configuration > Windows Settings > Security Settings > Software Restriction Policies > Additional Rules > Right Click: New Path Rule
-- Path: %LocalAppData%\WELLBIA\*.exe
-- Security level : Disallowed
-- OK
-- Path: C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64\TslGame_UC.exe
-- Security level : Disallowed
-- OK
-+ May cause game crashes, BSODs and stuttering.
+- - Path: %LocalAppData%\WELLBIA\*.exe
+- - Security level : Disallowed
+- - OK
+- - Path: C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64\TslGame_UC.exe
+- - Security level : Disallowed
+- - OK
++ May fix some game crashes, BSODs and stuttering issues.
 
 PUBG, Reset Game Settings:
 - Do this after every game update & game crash
@@ -61,34 +64,35 @@ PUBG, Reset Game Settings:
 2) Exit PUBG
 3) Delete %LocalAppData%\TslGame\Saved
 4) Restore settings from cloud
-+ May cause game crashes
++ May prevent some game crashes
 
 PUBG, Render Scale Check:
 1) Exit PUBG
 2) Open %LocalAppData%\TslGame\Saved\Config\WindowsNoEditor\GameUserSettings.ini
 - Confirm ScreenScale decimals are zeros only
-- Also check sg.ResolutionQuality, InGameCustomFrameRateLimit, MasterSoundVolume, EffectSoundVolume, EmoteSoundVolume, BGMSoundVolume, PlaygroundBGMSoundVolume, PlaygroundWebSoundVolume, FpsCameraFov, Gamma, GammasForMap,ForceFeedbackMultiplier, FrameRateLimit, 
-+ May cause notable performance issues
+- Also check sg.ResolutionQuality, InGameCustomFrameRateLimit, MasterSoundVolume, EffectSoundVolume, EmoteSoundVolume, BGMSoundVolume, PlaygroundBGMSoundVolume, PlaygroundWebSoundVolume, FpsCameraFov, Gamma, GammasForMap,ForceFeedbackMultiplier, FrameRateLimit 
++ May prevent some performance issues
 
 PUBG, Remove Video Files:
 1) Delete C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Content\Movies
-+ Slower game boot times, unnecessary video files
++ Faster startup of PUBG
 
 PUBG, Disable Full-Screen Optimisations:
 - NOTE: Try with both settings
 1) C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64 > Right Click: Properties > Compatibility > [x] Disable full-screen optimisations
-+ May cause stuttering
++ May fix some stuttering issues
 
 PUBG, Reinstall Game:
+- TODO: Add steps for uninstalling Anticheats etc.
 - Could also try verifying files
 + Good "catch-all" fix
 
 PUBG, Disable In-Game Overlays:
 - Discord, Steam, Rivatuner, etc.
-+ May cause performance issues, for ex. anticheats repeatedly scanning overlays.
++ May prevent some performance issues, for ex. anticheats repeatedly scanning overlays.
 
 PUBG, Disable Replays & Deathcams
-+ May cause performance issues
++ May prevent some performance issues
 
 PUBG, Set Up GSYNC:
 1) NVIDIA Control Panel > Set Up G-SYNC
@@ -100,24 +104,23 @@ PUBG, Set Up GSYNC:
 - Monitor Technology: G-SYNC
 - Power management mode: Prefer maximum performance
 - Preferred refresh rate: Highest available
-# - Triple Buffering: Off (OpenGL only setting?)
 - Vertical Sync: On
 3) PUBG Graphics Settings:
 - In-Game Framelimit: 
 - - 144hz -> 130FPS
 - - 165hz -> 150FPS
 - - 240hz -> 220FPS
-- - Lower framelimit to ~90% avg FPS
+- - Optionally lower framelimit to ~90% avg FPS
 - Lobby Framelimit: 60 FPS
 - Vertical Sync: Off
 4) Windows Advanced Display Settings:
 - Refresh Rate: Select Highest
-+ Should provide overall smoother game experience
++ Provides smoother performance
 
 PUBG, Use DirectX 11
 + Should provide overall smoother game experience
 
-PUBG, Render Scale tuning:
+PUBG, Render Scale tuning: [Experimental, wrongly configured may cause severe performance issues]
 - NOTE: Requires high end PC (likely 3080ti or better) 
 1) Open %LocalAppData%\TslGame\Saved\Config\WindowsNoEditor\GameUserSettings.ini
 - Set ScreenScale a value between 120 and 200 (eg. 125 or 150)
@@ -126,26 +129,24 @@ PUBG, Render Scale tuning:
 2) NVIDIA Control Panel > Manage 3D Settings > Program Settings > Select a program to customise: tslgame.exe > Antialiasing - Mode: Off
 + Mostly a personal preference, but may provide better and "more accurate" image quality due to not using AA.
 
-ISLC For Low-End PCs
+ISLC For Low-End PCs [Experimental, unclear suitability]
 - Clears standby ("cache") memory on a timed interval
 - https://www.wagnardsoft.com/forums/viewtopic.php?t=1256
 + May ease stuttering for lower end PCs
 
-notexturestreaming?
-https://docs.unrealengine.com/4.27/en-US/ProductionPipelines/CommandLineArguments/
-- nopealla testillä 0.1% FPS 40->20.
+PUBG, Optional startup parameteres:
+- koreanrating -> blood is green
+- nosplash -> no PUBG logo prompt at the start up
 
-koreanrating
 
-nosplash? ok
+EXPERIMENTAL & OTHER MISC. NOTES. PROBABLY SHOULDN'T TRY THESE:
+---
 
-benchmark? fps? dumpmovie? ei hyötyä
-
-Visual C++ Redistributable?
+Visual C++ Redistributable:
 https://aka.ms/vs/17/release/vc_redist.x64.exe
 https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
-.NET 6.0 runtime?
+.NET 6.0 runtime:
 https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-6.0.10-windows-x64-installer
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
 
