@@ -1,0 +1,205 @@
+PUBG Performance Tweak Guide
+
+[Work-In-Progress]
+
+OS Basic Checklist
+- Stop being a moron, don't skip these
+- Reboot Windows at least every few days
+1) Check for Windows updates
+2) Check for GPU driver updates & Do a clean reinstall
+3) Check for other device drivers (MOBO, UEFI, etc.)
+4) Check OS and PUBG is on SSD with at least 20% free space (absolute minimum 10%)
+- If you need to make space, trim the SSD afterwards (Optimise Drives)
+5) Open CMD as Admin:
+- sfc /scannow
+- dism /Online /Cleanup-Image /RestoreHealth
+- - Run twice both commands, no errors should be left afterwards. Otherwise plan for Windows reinstall.
+6) Enable Game Mode
+- Search Game Mode
++ This optimizes Windows resource usage during gaming
+7) Disable Xbox Game Bar
+- Search Game Mode > Xbox Game Bar
++ Unnecessary background service for PUBG
+8) Disable Hardware-accelerated GPU scheduling
+- Search Graphics Settings
++ May cause stuttering in PUBG
+9) Disable variable refresh rate
+- Search Graphics Settings
++ Unnecessary compatibility feature for some games
+10) If you use monitor scaling, override DPI scaling for TslGame.exe
+- TslGame.Exe > Right Click: Properties > Compatibility > Change high DPI settings > High DPI scaling override: [x] Override...: Application
++ May cause performance issues in PUBG
+11) Disable unnecessary apps at startup
+- Task Manager > Startup > Check apps with status enabled
++ Unnecessary resource usage, slower boot times
+12) Set page file size
+- System Properties > Advanced > Performance: Settings... > Virtual Memory: Change...
+- [ ] Automatically manage paging file size for all drives
+- Set no paging files for all drives except C: (click Set everytime you change a setting)
+- If you have 20GB+ RAM and don't run any special high memory usage applications, set C: custom size 4096MB (initial size & maximum size).
+- If you have less than 20GB RAM or run special high memory usage applications, set (x) System managed size.
++ Often unnecessary virtual memory usage, which is slower than normal memory
+
+PUBG, Wellbia Anticheat Uninstallation:
+1) Delete C:\Windows\xhunter1.sys
+2) Delete C:\Program Files\Common Files\Uncheater
+3) Find and delete registry entries with keywords "xhunter" and "ucldr"
+4) Block from reinstalling itself:
+- NOTE: This doesn't work on Windows Home editions. If you have one, go upgrade please. You can find a key from any key shop. Otherwise Enable UAC and at the start of the game always disallow Wellbia prompt.
+- Local Group Policy Editor > Computer Configuration > Windows Settings > Security Settings > Software Restriction Policies > Additional Rules > Right Click: New Path Rule
+- Path: %LocalAppData%\WELLBIA\*.exe
+- Security level : Disallowed
+- OK
+- Path: C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64\TslGame_UC.exe
+- Security level : Disallowed
+- OK
++ May cause game crashes, BSODs and stuttering.
+
+PUBG, Reset Game Settings:
+- Do this after every game update & game crash
+1) Confirm you've saved game settings to cloud
+2) Exit PUBG
+3) Delete %LocalAppData%\TslGame\Saved
+4) Restore settings from cloud
++ May cause game crashes
+
+PUBG, Render Scale Check:
+1) Exit PUBG
+2) Open %LocalAppData%\TslGame\Saved\Config\WindowsNoEditor\GameUserSettings.ini
+- Confirm ScreenScale decimals are zeros only
+- Also check sg.ResolutionQuality, InGameCustomFrameRateLimit, MasterSoundVolume, EffectSoundVolume, EmoteSoundVolume, BGMSoundVolume, PlaygroundBGMSoundVolume, PlaygroundWebSoundVolume, FpsCameraFov, Gamma, GammasForMap,ForceFeedbackMultiplier, FrameRateLimit, 
++ May cause notable performance issues
+
+PUBG, Remove Video Files:
+1) Delete C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Content\Movies
++ Slower game boot times, unnecessary video files
+
+PUBG, Disable Full-Screen Optimisations:
+- NOTE: Try with both settings
+1) C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64 > Right Click: Properties > Compatibility > [x] Disable full-screen optimisations
++ May cause stuttering
+
+PUBG, Reinstall Game:
+- Could also try verifying files
++ Good "catch-all" fix
+
+PUBG, Disable In-Game Overlays:
+- Discord, Steam, Rivatuner, etc.
++ May cause performance issues, for ex. anticheats repeatedly scanning overlays.
+
+PUBG, Disable Replays & Deathcams
++ May cause performance issues
+
+PUBG, Set Up GSYNC:
+1) NVIDIA Control Panel > Set Up G-SYNC
+- [x] Enable G-SYNC, G-SYNC Compatible
+- (x) Enable for full screen mode
+2) NVIDIA Control Panel > Manage 3D settings > Program Settings > Select a program to customise: tslgame.exe
+- Low Latency Mode: Ultra
+- Max Frame Rate: Off
+- Monitor Technology: G-SYNC
+- Power management mode: Prefer maximum performance
+- Preferred refresh rate: Highest available
+# - Triple Buffering: Off (OpenGL only setting?)
+- Vertical Sync: On
+3) PUBG Graphics Settings:
+- In-Game Framelimit: 
+- - 144hz -> 130FPS
+- - 165hz -> 150FPS
+- - 240hz -> 220FPS
+- - Lower framelimit to ~90% avg FPS
+- Lobby Framelimit: 60 FPS
+- Vertical Sync: Off
+4) Windows Advanced Display Settings:
+- Refresh Rate: Select Highest
++ Should provide overall smoother game experience
+
+PUBG, Use DirectX 11
++ Should provide overall smoother game experience
+
+PUBG, Render Scale tuning:
+- NOTE: Requires high end PC (likely 3080ti or better) 
+1) Open %LocalAppData%\TslGame\Saved\Config\WindowsNoEditor\GameUserSettings.ini
+- Set ScreenScale a value between 120 and 200 (eg. 125 or 150)
+- Set sg.AntiAliasingQuality to 0
+- Set bSharpen to True
+2) NVIDIA Control Panel > Manage 3D Settings > Program Settings > Select a program to customise: tslgame.exe > Antialiasing - Mode: Off
++ Mostly a personal preference, but may provide better and "more accurate" image quality due to not using AA.
+
+ISLC For Low-End PCs
+- Clears standby ("cache") memory on a timed interval
+- https://www.wagnardsoft.com/forums/viewtopic.php?t=1256
++ May ease stuttering for lower end PCs
+
+notexturestreaming?
+https://docs.unrealengine.com/4.27/en-US/ProductionPipelines/CommandLineArguments/
+- nopealla testillä 0.1% FPS 40->20.
+
+koreanrating
+
+nosplash? ok
+
+benchmark? fps? dumpmovie? ei hyötyä
+
+Visual C++ Redistributable?
+https://aka.ms/vs/17/release/vc_redist.x64.exe
+https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
+
+.NET 6.0 runtime?
+https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-6.0.10-windows-x64-installer
+https://dotnet.microsoft.com/en-us/download/dotnet/6.0
+
+r.Tonemapper.Sharpen ? 1,3,5,10?
+Engine.ini:
+[/Script/Engine.RendererSettings]
+r.Tonemapper.Sharpen=1
+
+AA low vs high fps?
+
+[/Script/Engine.RendererSettings]
+r.DefaultFeature.Bloom=False
+r.DefaultFeature.AmbientOcclusion=False
+r.DefaultFeature.AmbientOcclusionStaticFraction=False
+r.DefaultFeature.AutoExposure=False
+r.DefaultFeature.MotionBlur=False
+r.DepthOfFieldQuality=0
+r.DepthOfField.MaxSize=0
+r.SwitchGridShadow=0
+r.Streaming.Boost=0
+r.Streaming.PoolSize=0
+r.Streaming.LimitPoolSizeToVRAM=1
+r.Streaming.DefragDynamicBounds=1
+r.Streaming.HLODStrategy=2
+r.Streaming.FullyLoadUsedTextures=1
+r.bForceCPUAccessToGPUSkinVerts=True
+r.CreateShadersOnLoad=1
+r.Shaders.Optimize=1
+r.Shaders.FastMath=1
+r.UseShaderCaching=1
+r.UseShaderPredraw=1
+r.TargetPrecompileFrameTime=13
+r.PredrawBatchTime=13
+r.AccelPredrawBatchTime=0
+r.AccelTargetPrecompileFrameTime=0
+r.Streaming.FramesForFullUpdate=60
+r.FinishCurrentFrame=0
+
+[/Script/TslGame.TslEngine]
+FrameRateCap=0
+
+[SystemSettings]
+OneFrameThreadLag=1
+
+Inventory screen character render disable?
+
+Universal Scope Sensitivity
+- Zoom-specific sensitivies are absolutely unintuitive and needs to be configured via config file as in-game rounds off decimals terribly wrong
+- 4x sensitivity is actually for 4.2x (ACOG)
+- Zoom adjustable scopes have unintuitive sensitivities between zoom levels
+
+Scoping Sensitivity
+- 15x major pixel skips with <22 sens
+- 8x major pixel skips with <13 sens
+
+bUseActionQueuing=True
+bPreloadingMap=False
