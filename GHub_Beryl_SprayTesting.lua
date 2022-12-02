@@ -11,53 +11,75 @@
 mouseBind_activation = 4 -- 4: thumb near
 mouseBind_changeFireMode = 5 -- 5: thumb far
 mouseBind_changeScope = 3 -- 3: MMB
+mouseBind_changeStance = 6 -- 6: ???
 mouseBind_fireInGame = 1 -- 1: LMB
 
-mouseSensitivity = 50 -- [0..100], adjust this for the script to work with your sensitivity settings
+mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with your sensitivity settings
 
 weapon = "Beryl" -- Beryl/Mini
 fireMode = "auto" -- auto/single/burst
-
+scope = 1 -- 1/1.31/2/3/4/4.21/6/8/15 (1.31: 1x hold breath, 4.21: ACOG)
+stance = "stand" -- stand/crouch/prone
 
 function SetDefaults()
     ClearLog()
 
-    -- magSize: shots to fire (pcs)
-    -- timePerShot: rate of fire (ms)
-    -- moveY: vertical movement compensation per shot (px)
-    -- moveY_increasePerShot: compensation increase per shot (%)
+    -- magSize: [pcs], shots to fire
+    -- timePerShot: [ms], rate of fire
+    -- moveY: [%], vertical movement compensation per shot
+    -- moveY_increasePerShot: [%], compensation increase per shot
 
     if weapon == "Beryl" and fireMode == "auto" then
         magSize = 30
-        timePerShot = 86
+        timePerShot = 86 -- accurate: 85.71
         moveY = 1.9
         moveY_increasePerShot = 0.021
     elseif weapon == "Beryl" and fireMode == "single" then
         magSize = 30
         timePerShot = 110
         moveY = 1.75
-        moveY_increasePerShot = 0
+        moveY_increasePerShot = 0.0
     elseif weapon == "Beryl" and fireMode == "burst" then
         magSize = 30
         timePerShot = 86
         moveY = 1.75
-        moveY_increasePerShot = 0
+        moveY_increasePerShot = 0.0
     end
 
-    moveY = Rounding( moveY * mouseSensitivity )
+    scopeFactor = changeScope()
+    stanceFactor = changeStance()
+    moveY = Rounding( moveY * mouseSensitivity * scopeFactor * stanceFactor )
     moveY_increasePerShot = Rounding( moveY * moveY_increasePerShot )
     mouseTimer_offset = Rounding( timePerShot / 2  )
 end
 
 
-function Rounding(value)
+function Rounding(value) -- because LUA doesn't have rounding implemented
     value_floor = math.floor(value)
     value_ceil = math.ceil(value)
-
     if value_floor < (value - 0.5) then
         return value_ceil
     else
         return value_floor
+    end
+end
+
+
+function changeScope()
+    -- default ADS FOV is 72
+    -- eg. 1x Red Dot is 72 FOV and holding breath decreases FOV to 55
+    -- 72/55 = 1,309.. => 72/1,31 = 54,96..
+    return Rounding( 72 / scope )
+end
+
+
+function ChangeStance()
+    if stance == "stand" then
+        return 1
+    elseif stance == "crouch" then
+        return 0.5
+    elseif stance == "prone" then
+        return 0.25
     end
 end
 
@@ -72,19 +94,51 @@ function OnEvent(event, arg)
         elseif fireMode == "burst" then
             BurstFire()
         end
+
     elseif (event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_changeFireMode) then
         if fireMode == "auto" then
-            OutputLogMessage("\nSwitching to Single Fire\n")
             fireMode = "single"
         elseif fireMode == "single" then
-            OutputLogMessage("\nSwitching to Burst Fire\n")
             fireMode = "burst"
         elseif fireMode == "burst" then
-            OutputLogMessage("\nSwitching to Auto Fire\n")
             fireMode = "auto"
         end
+
+        OutputLogMessage("\nSwitching Fire Mode to: " .. fireMode .. "\n")
+
     elseif (event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_changeScope) then
-        OutputLogMessage("\nChanging Scope/FoV\n")
+        if scope == 1 then
+            scope = 1.31
+        elseif scope == 1.31 then
+            scope = 2
+        elseif scope == 2 then
+            scope = 3
+        elseif scope == 3 then
+            scope = 4
+        elseif scope == 4 then
+            scope = 4.21
+        elseif scope == 4.21 then
+            scope = 6
+        elseif scope == 6 then
+            scope = 8
+        elseif scope == 8 then
+            scope = 15
+        elseif scope == 15 then
+            scope = 1
+        end
+
+        OutputLogMessage("\nChanging Scope to: " .. scope .. "\n")
+
+    elseif (event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_changeStance) then
+        if stance == "stand" then
+            stance = "crouch"
+        elseif stance == "crouch" then
+            stance = "prone"
+        elseif stance == "prone" then
+            stance = "stand"
+        end
+
+        OutputLogMessage("\nSwitching Stance to: " .. stance .. "\n")
     end
 end
 
