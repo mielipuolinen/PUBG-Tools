@@ -1,9 +1,9 @@
-- ABSOLUTELY NO WARRANTY - YOU WILL RISK A GAME BAN FOR YOURSELF BY USING THIS - USE AT YOUR OWN RISK
-- Even then, PLEASE use it ONLY in the Training mode for learning and researching purposes.
+-- ABSOLUTELY NO WARRANTY - YOU WILL RISK A GAME BAN FOR YOURSELF BY USING THIS - USE AT YOUR OWN RISK
+-- Even then, PLEASE use it ONLY in the Training mode for learning and researching purposes.
 
-- Tuned ONLY for the following setup:
-- Beryl, Full Auto, standing and breathing
-- Red Dot, Compensator, Vertical Foregrip, Quickdraw Mag
+-- Tuned ONLY for the following setup:
+-- Beryl, Full Auto, standing and breathing
+-- Red Dot, Compensator, Vertical Foregrip, Quickdraw Mag
 
 function SetDefaults()
     ClearLog()
