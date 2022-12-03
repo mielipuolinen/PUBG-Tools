@@ -47,7 +47,7 @@ function SetDefaults()
             moveY = 1.75
             moveY_increasePerShot = 0.0
         end
-    elseif weapong == "M4" then -- TODO: Tune values
+    elseif weapong == "M4" then -- TODO: Tune values for M4
         if fireMode == "auto" then
             magSize = 30
             timePerShot = 86 -- accurate: 85.71
@@ -59,23 +59,6 @@ function SetDefaults()
             moveY = 1.75
             moveY_increasePerShot = 0.0
         end
-    end
-
-    if weapon == "Beryl" and fireMode == "auto" then
-        magSize = 30
-        timePerShot = 86 -- accurate: 85.71
-        moveY = 1.9
-        moveY_increasePerShot = 0.021
-    elseif weapon == "Beryl" and fireMode == "single" then
-        magSize = 30
-        timePerShot = 110
-        moveY = 1.75
-        moveY_increasePerShot = 0.0
-    elseif weapon == "Beryl" and fireMode == "burst" then
-        magSize = 30
-        timePerShot = 86
-        moveY = 1.75
-        moveY_increasePerShot = 0.0
     end
 
     scopeFactor = ChangeScope()
