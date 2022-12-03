@@ -6,7 +6,8 @@
 -- Red Dot, Compensator, Vertical Foregrip, Quickdraw Mag
 
 -- Tested with Logitech G Hub app & Logitech G Pro Superlight mouse (600dpi)
--- Different mouse sensitivy configurations require different mouseSensitivity values
+-- Adjust mouseSensitivity to fit your mouse sensitivity settings
+-- Scope settings work only with universal sensitivity in-game
 
 mouseBind_activation = 4 -- 4: thumb near
 mouseBind_changeFireMode = 5 -- 5: thumb far
@@ -16,7 +17,7 @@ mouseBind_fireInGame = 1 -- 1: LMB
 
 mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with your sensitivity settings
 
-weapon = "Beryl" -- Beryl/Mini
+weapon = "Beryl" -- Beryl
 fireMode = "auto" -- auto/single/burst
 scope = 1 -- 1/1.31/2/3/4/4.21/6/8/15 (1.31: 1x hold breath, 4.21: ACOG)
 stance = "stand" -- stand/crouch/prone
@@ -28,6 +29,37 @@ function SetDefaults()
     -- timePerShot: [ms], rate of fire
     -- moveY: [%], vertical movement compensation per shot
     -- moveY_increasePerShot: [%], compensation increase per shot
+
+    if weapon == "Beryl" then
+        if fireMode == "auto" then
+            magSize = 30
+            timePerShot = 86 -- accurate: 85.71
+            moveY = 1.9
+            moveY_increasePerShot = 0.021 -- NOTE: probably should be checked again
+        elseif fireMode == "single" then
+            magSize = 30
+            timePerShot = 110
+            moveY = 1.75
+            moveY_increasePerShot = 0.0
+        elseif fireMode == "burst" then
+            magSize = 30
+            timePerShot = 86
+            moveY = 1.75
+            moveY_increasePerShot = 0.0
+        end
+    elseif weapong == "M4" then -- TODO: Tune values
+        if fireMode == "auto" then
+            magSize = 30
+            timePerShot = 86 -- accurate: 85.71
+            moveY = 1.9
+            moveY_increasePerShot = 0.021 -- NOTE: probably should be checked again
+        elseif fireMode == "single" then
+            magSize = 30
+            timePerShot = 110
+            moveY = 1.75
+            moveY_increasePerShot = 0.0
+        end
+    end
 
     if weapon == "Beryl" and fireMode == "auto" then
         magSize = 30
@@ -46,8 +78,8 @@ function SetDefaults()
         moveY_increasePerShot = 0.0
     end
 
-    scopeFactor = changeScope()
-    stanceFactor = changeStance()
+    scopeFactor = ChangeScope()
+    stanceFactor = ChangeStance()
     moveY = Rounding( moveY * mouseSensitivity * scopeFactor * stanceFactor )
     moveY_increasePerShot = Rounding( moveY * moveY_increasePerShot )
     mouseTimer_offset = Rounding( timePerShot / 2  )
@@ -65,21 +97,27 @@ function Rounding(value) -- because LUA doesn't have rounding implemented
 end
 
 
-function changeScope()
+function ChangeScope()
     -- default ADS FOV is 72
     -- eg. 1x Red Dot is 72 FOV and holding breath decreases FOV to 55
     -- 72/55 = 1,309.. => 72/1,31 = 54,96..
-    return Rounding( 72 / scope )
+    if scope == 1 then
+        return scope
+    elseif scope == 1.31 then -- hold breath (72FOV/55FOV)
+        return scope * 1.11
+    else
+        return scope / 1.11 -- scopes (80FOV/scopeFOV)
+    end
 end
 
 
-function ChangeStance()
+function ChangeStance() -- NOTE: May be little accurate (due to moveY & increasePerShot, etc.)
     if stance == "stand" then
         return 1
     elseif stance == "crouch" then
-        return 0.5
+        return 0.76
     elseif stance == "prone" then
-        return 0.25
+        return 0.52
     end
 end
 
