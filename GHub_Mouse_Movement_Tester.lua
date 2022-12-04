@@ -12,13 +12,13 @@
 -- All scopes work (except 1x with breath holding) automatically with 360deg/cm sensitivities
 
 -- Mouse Binds For This Script:
--- 1: LMB, 2: RMB, 3: MMB, 4: Thumb Near, 5: Thumb Far
-mouseBind_activation = 4 -- Activate recoil compensation
-mouseBind_switchFireMode = 5 -- Switch fire modes
-mouseBind_switchScope = 3 -- Switch scope settings (when using universal sensitivity in-game)
-mouseBind_switchStance = 99 -- Switch stance settings
-mouseBind_testPixelSkipping = 99 -- Run pixel skipping test
-mouseBind_testZoomAnimation = 99 -- Run zoom animation test
+-- 1: LMB, 2: RMB, 3: MMB, 4: Thumb Near, 5: Thumb Far, 99: Non-Allocated
+mouseBind_activation        = 4     -- Activate recoil compensation
+mouseBind_switchFireMode    = 5     -- Switch fire modes
+mouseBind_switchScope       = 3     -- Switch scope settings (when using universal sensitivity in-game)
+mouseBind_switchStance      = 99    -- Switch stance settings
+mouseBind_testPixelSkipping = 99    -- Run pixel skipping test
+mouseBind_testZoomAnimation = 99    -- Run zoom animation test
 
 mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with your sensitivity settings
 -- My in-game sensitivity settings (1000dpi):
@@ -34,39 +34,31 @@ mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with 
 -- (SensitiveName="Scope15X",Sensitivity=75.709628,LastConvertedSensitivity=0.065347))))),
 -- MouseVerticalSensitivityMultiplierAdjusted=1.000000
 
-weapon = "Beryl" -- Beryl/M4
-fireMode = "auto" -- auto/single/burst
-magSize = 30
-scope = 1 -- 1/1.31/2/3/4/4.21/6/8/15 (1.31: 1x hold breath, 4.21: ACOG)
-stance = "stand" -- stand/crouch/prone
-autoReload = false -- boolean
-autoScope = false -- boolean
-autoHoldBreath = false -- boolean
-toggleActivation = false -- boolean, toggle or hold for activation bind
+weapon           = "Beryl"  -- [Beryl|M4]
+fireMode         = "auto"   -- [auto|single|burst]
+magSize          = 30       -- [1..n]
+scope            = 1        -- [1|1.31|2|3|4|4.21|6|8|15]   1.31: 1x hold breath, 4.21: ACOG
+stance           = "stand"  -- [stand|crouch|prone]
+autoReload       = false    -- [true|false]
+autoScope        = false    -- [true|false]
+autoHoldBreath   = false    -- [true|false]
+toggleActivation = false    -- [true|false]                 toggle or hold for activation bind
 
 -- In-Game Controls:
-mouseBind_fireInGame = 1 -- 1: LMB
-mouseBind_scopeInGame = 2 -- 2: RMB
-keyBind_reloadInGame = "r"
+mouseBind_fireInGame     = 1        -- 1: LMB
+mouseBind_scopeInGame    = 2        -- 2: RMB
+keyBind_reloadInGame     = "r"
 keyBind_holdBreathInGame = "lshift"
 
 function SetDefaults()
     ClearLog()
-    -- magSize = 1
-    timePerShot_accurate = 100
-    moveY = 1
-    moveY_increasePerShot = 0
-    moveY_increaseAfterShot = 999
-    moveY_doubleIncreaseAfterShot = 999
-    moveY_stopIncreaseAfterShot = 999
-
-    -- magSize: [pcs], shots to fire
-    -- timePerShot_accurate: [ms], rate of fire
-    -- moveY: [%], vertical movement compensation per shot
-    -- moveY_increasePerShot: [%], compensation increase per shot
-    -- moveY_increaseAfterShot: [pcs], starts increasing compensation after this shot by using moveY_increasePerShot
-    -- moveY_doubleIncreaseAfterShot: [pcs], doubles compensation increasement after this shot
-    -- moveY_stopIncreaseAfterShot: [pcs], stops compensation increasement after this shot
+    -- magSize                    = 1       -- [pcs]    shots to fire
+    timePerShot_accurate          = 100     -- [ms]     rate of fire
+    moveY                         = 1       -- [%]      vertical movement compensation per shot
+    moveY_increasePerShot         = 0       -- [%]      compensation increase per shot
+    moveY_increaseAfterShot       = 999     -- [pcs]    start increasing compensation after this shot
+    moveY_doubleIncreaseAfterShot = 999     -- [pcs]    double compensation increasement after this shot
+    moveY_stopIncreaseAfterShot   = 0       -- [pcs]    stop compensation increasement after this shot
 
     if weapon == "Beryl" then
         timePerShot_accurate = 85.71
@@ -266,8 +258,8 @@ function AutoFire()
 
         if sprayTimer >= mouseTimer then
 
-            actualTimer_f = math.floor(shotCounter * 85.71 - 85.71)
-            actualTimer_c = math.ceil(shotCounter * 85.71 - 85.71)
+            actualTimer_f = math.floor(shotCounter * timePerShot_accurate - timePerShot_accurate)
+            actualTimer_c = math.ceil(shotCounter * timePerShot_accurate - timePerShot_accurate)
             OutputLogMessage(shotCounter .. "/" .. magSize)
             OutputLogMessage("\t moveY: " .. moveY .. " px\t\t mouseTimer: " .. mouseTimer .. " ms")
             OutputLogMessage("\t\t actual shot: " .. actualTimer_f .. " - " .. actualTimer_c .. " ms\n")
@@ -303,7 +295,6 @@ function AutoFire()
 
 end
 
-
 function SingleFire()
 
     OutputLogMessage("SingleFire():\n")
@@ -315,32 +306,54 @@ function SingleFire()
     sprayTimer_start = GetRunningTime()
     shotCounter = 1
 
+    moveY_steps = 4
+    moveY_sleepPerStep = 3
+    moveY_movePerStep = math.floor( moveY / moveY_steps )
+
     repeat
 
         sprayTimer = GetRunningTime() - sprayTimer_start
-        shootTimer = shotCounter * timePerShot
+        mouseTimer = (shotCounter * timePerShot)
 
-        if sprayTimer >= shootTimer then
+        if sprayTimer >= mouseTimer then
 
-            actualTimer_f = math.floor(shotCounter * 85.71 - 85.71)
-            actualTimer_c = math.ceil(shotCounter * 85.71 - 85.71)
+            actualTimer_f = math.floor(shotCounter * timePerShot_accurate - timePerShot_accurate)
+            actualTimer_c = math.ceil(shotCounter * timePerShot_accurate - timePerShot_accurate)
             OutputLogMessage(shotCounter .. "/" .. magSize)
-            OutputLogMessage("\t moveY: " .. moveY .. " px\t\t shootTimer: " .. shootTimer .. " ms")
+            OutputLogMessage("\t moveY: " .. moveY .. " px\t\t mouseTimer: " .. mouseTimer .. " ms")
             OutputLogMessage("\t\t actual shot: " .. actualTimer_f .. " - " .. actualTimer_c .. " ms\n")
             OutputLogMessage("\t sprayTimer: " .. sprayTimer .. " ms\t sprayTimer_start: " .. sprayTimer_start .. " ms\n")
 
-            PressAndReleaseMouseButton(mouseBind_fireInGame)
-            Sleep(mouseTimer_offset) -- A short delay before compensating the recoil
-            MoveMouseRelative(0,moveY)
+            PressMouseButton(mouseBind_fireInGame)
+            Sleep(math.random(10,20))
+            ReleaseMouseButton(mouseBind_fireInGame)
+            Sleep(mouseTimer_offset)
 
-            moveY = moveY + moveY_increasePerShot
+            for i = 1, moveY_steps, 1 do
+                MoveMouseRelative(0, moveY_movePerStep)
+                Sleep(moveY_sleepPerStep)
+            end
+
+            moveY_lastStep = moveY - (moveY_steps * moveY_movePerStep)
+            MoveMouseRelative(0, moveY_lastStep)
+            
+            if moveY_stopIncreaseAfterShot <= shotCounter then
+              -- do nothing
+            elseif moveY_doubleIncreaseAfterShot <= shotCounter then
+              moveY = moveY + moveY_increasePerShot + moveY_increasePerShot
+            elseif moveY_increaseAfterShot <= shotCounter then
+              moveY = moveY + moveY_increasePerShot
+            end
+
             shotCounter = shotCounter + 1
 
         end
 
         Sleep(1)
 
-    until shotCounter == magSize + 1 -- +1 includes last shot
+    until not IsMouseButtonPressed(mouseBind_activation) or (shotCounter == magSize + 1) -- +1 includes last shot
+
+    OutputLogMessage("AutoFire() Running Time: ".. (GetRunningTime() - sprayTimer_start) .." ms\n\n")
 
 end
 
