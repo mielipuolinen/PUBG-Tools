@@ -11,19 +11,14 @@
 -- Scope modes can be used when universal sensitivity is used in-game ("monitor distance sensitivity")
 -- All scopes work (except 1x with breath holding) automatically with 360deg/cm sensitivities
 
+-- Mouse Binds For This Script:
 -- 1: LMB, 2: RMB, 3: MMB, 4: Thumb Near, 5: Thumb Far
-
 mouseBind_activation = 4 -- Activate recoil compensation
 mouseBind_switchFireMode = 5 -- Switch fire modes
 mouseBind_switchScope = 3 -- Switch scope settings (when using universal sensitivity in-game)
 mouseBind_switchStance = 99 -- Switch stance settings
 mouseBind_testPixelSkipping = 99 -- Run pixel skipping test
 mouseBind_testZoomAnimation = 99 -- Run zoom animation test
-
-mouseBind_fireInGame = 1 -- 1: LMB
-mouseBind_scopeInGame = 2 -- 2: RMB
-keyBind_reloadInGame = "r"
-keyBind_holdBreathInGame = "lshift"
 
 mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with your sensitivity settings
 -- My in-game sensitivity settings (1000dpi):
@@ -41,13 +36,19 @@ mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with 
 
 weapon = "Beryl" -- Beryl/M4
 fireMode = "auto" -- auto/single/burst
+magSize = 30
 scope = 1 -- 1/1.31/2/3/4/4.21/6/8/15 (1.31: 1x hold breath, 4.21: ACOG)
 stance = "stand" -- stand/crouch/prone
 autoReload = false -- boolean
 autoScope = false -- boolean
 autoHoldBreath = false -- boolean
-magSize = 30
 toggleActivation = false -- boolean, toggle or hold for activation bind
+
+-- In-Game Controls:
+mouseBind_fireInGame = 1 -- 1: LMB
+mouseBind_scopeInGame = 2 -- 2: RMB
+keyBind_reloadInGame = "r"
+keyBind_holdBreathInGame = "lshift"
 
 function SetDefaults()
     ClearLog()
