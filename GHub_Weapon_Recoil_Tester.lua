@@ -5,23 +5,35 @@
 -- Beryl, Full Auto, standing and breathing
 -- Red Dot, Compensator, Vertical Foregrip, Quickdraw Mag
 
--- Tested with Logitech G Hub app & Logitech G Pro Superlight mouse (600dpi)
+-- Tested with Logitech G Hub app & Logitech G Pro Superlight mouse
 -- Adjust mouseSensitivity to fit your mouse sensitivity settings
--- Scope settings work only with universal sensitivity in-game
 
 -- Scope modes can be used when universal sensitivity is used in-game ("monitor distance sensitivity")
 -- All scopes work (except 1x with breath holding) automatically with 360deg/cm sensitivities
 
-mouseBind_activation = 4 -- 4: thumb near
+mouseBind_activation = 6 -- 4: thumb near
 mouseBind_switchFireMode = 5 -- 5: thumb far
 mouseBind_switchScope = 3 -- 3: MMB
 mouseBind_switchStance = 6 -- 6: ???
 mouseBind_fireInGame = 1 -- 1: LMB
 mouseBind_scopeInGame = 2 -- 2: RMB
+mouseBind_testPixelSkipping = 4
 keyBind_reloadInGame = "r"
 keyBind_holdBreathInGame = "lshift"
 
 mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with your sensitivity settings
+-- My in-game sensitivity settings (1000dpi):
+-- SensitiveMap=((Mouse, (Array=((SensitiveName="Normal",Sensitivity=21.750566,LastConvertedSensitivity=0.005446),
+-- (SensitiveName="Targeting",Sensitivity=21.750566,LastConvertedSensitivity=0.005446),
+-- (SensitiveName="Scoping",Sensitivity=24.650163,LastConvertedSensitivity=0.006223),
+-- (SensitiveName="ScopingMagnified",Sensitivity=50.000000,LastConvertedSensitivity=0.020000),
+-- (SensitiveName="Scope2X",Sensitivity=36.802066,LastConvertedSensitivity=0.010891),
+-- (SensitiveName="Scope3X",Sensitivity=45.606629,LastConvertedSensitivity=0.016337),
+-- (SensitiveName="Scope4X",Sensitivity=52.967385,LastConvertedSensitivity=0.022929),
+-- (SensitiveName="Scope6X",Sensitivity=60.658129,LastConvertedSensitivity=0.032673),
+-- (SensitiveName="Scope8X",Sensitivity=66.905065,LastConvertedSensitivity=0.043564),
+-- (SensitiveName="Scope15X",Sensitivity=75.709628,LastConvertedSensitivity=0.065347))))),
+-- MouseVerticalSensitivityMultiplierAdjusted=1.000000
 
 weapon = "Beryl" -- Beryl/M4
 fireMode = "auto" -- auto/single/burst
@@ -124,14 +136,16 @@ end
 
 
 function OnEvent(event, arg)
-    if     ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_activation     ) then
+    if     ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_activation        ) then
         TriggerAction()
-    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchFireMode ) then
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchFireMode    ) then
         SwitchFireMode()
-    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchScope    ) then
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchScope       ) then
         SwitchScope()
-    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchStance   ) then
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchStance      ) then
         SwitchStance()
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_testPixelSkipping ) then
+        TestPixelSkipping()
     end
 end
 
@@ -360,4 +374,86 @@ function BurstFire()
 
     until shotCounter == magSize + 1 -- +1 includes last shot
 
+end
+
+
+function TestPixelSkipping()
+    OutputLogMessage("TestPixelSkipping()\n")
+
+    steps = 200
+    jumpSteps = 100
+    delay = 250 --ms
+    sleepDelay = 1 --ms
+
+    OutputLogMessage("Steps: " .. steps .. " \t Jump Steps: " .. jumpSteps .. " \t Delay: " .. delay .. " \n")
+    OutputLogMessage("Watch for uneven movement to detect possible pixel skipping\n")
+    OutputLogMessage("Primarily test with full zoomed 8x and 15x scopes\n\n")
+    
+    OutputLogMessage("Down\n")
+    stepCount = 0
+    repeat
+        MoveMouseRelative(0,1)
+        Sleep(sleepDelay)
+        stepCount = stepCount + 1
+    until stepCount == steps
+
+    Sleep(delay)
+
+    OutputLogMessage("Up\n")
+    stepCount = 0
+    repeat
+        MoveMouseRelative(0,-1)
+        Sleep(sleepDelay)
+        stepCount = stepCount + 1
+    until stepCount == steps
+
+    Sleep(delay)
+
+    OutputLogMessage("Right\n")
+    stepCount = 0
+    repeat
+        MoveMouseRelative(1,0)
+        Sleep(sleepDelay)
+        stepCount = stepCount + 1
+    until stepCount == steps
+
+    Sleep(delay)
+
+    OutputLogMessage("Left\n")
+    stepCount = 0
+    repeat
+        MoveMouseRelative(-1,0)
+        Sleep(sleepDelay)
+        stepCount = stepCount + 1
+    until stepCount == steps
+
+    Sleep(delay)
+
+    OutputLogMessage("Down + Right\n")
+    stepCount = 0
+    repeat
+        MoveMouseRelative(1,1)
+        Sleep(sleepDelay)
+        stepCount = stepCount + 1
+    until stepCount == steps
+
+    Sleep(delay)
+
+    OutputLogMessage("Up + Left\n")
+    stepCount = 0
+    repeat
+        MoveMouseRelative(-1,-1)
+        Sleep(sleepDelay)
+        stepCount = stepCount + 1
+    until stepCount == steps
+
+    Sleep(delay)
+    OutputLogMessage("Jump Down + Right\n")
+    MoveMouseRelative(jumpSteps,jumpSteps)
+
+    Sleep(delay)
+    OutputLogMessage("Jump Up + Left\n")
+    MoveMouseRelative(jumpSteps * -1, jumpSteps * -1)
+
+    OutputLogMessage("TestPixelSkipping(): Finished")
 end
