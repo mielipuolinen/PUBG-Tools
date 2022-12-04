@@ -32,9 +32,15 @@ autoScope = false -- boolean
 autoHoldBreath = false -- boolean
 magSize = 30
 
-
 function SetDefaults()
     ClearLog()
+    -- magSize = 1
+    timePerShot_accurate = 100
+    moveY = 1
+    moveY_increasePerShot = 0
+    moveY_increaseAfterShot = 999
+    moveY_doubleIncreaseAfterShot = 999
+    moveY_stopIncreaseAfterShot = 999
 
     -- magSize: [pcs], shots to fire
     -- timePerShot_accurate: [ms], rate of fire
@@ -45,22 +51,20 @@ function SetDefaults()
     -- moveY_stopIncreaseAfterShot: [pcs], stops compensation increasement after this shot
 
     if weapon == "Beryl" then
+        timePerShot_accurate = 85.71
         if fireMode == "auto" then
-            timePerShot_accurate = 85.71
-            moveY = 1.61 --1.9
-            moveY_increasePerShot = 0.056 -- 0.021 -- NOTE: probably should be checked again
-            moveY_increaseAfterShot = 5 -- how many shots before increasing compensation per shot
-            moveY_doubleIncreaseAfterShot = 99 --unused
+            moveY = 1.61
+            moveY_increasePerShot = 0.056
+            moveY_increaseAfterShot = 5
             moveY_stopIncreaseAfterShot = 16
         elseif fireMode == "single" then
-            timePerShot_accurate = 110
             moveY = 1.75
             moveY_increasePerShot = 0.0
         elseif fireMode == "burst" then
-            timePerShot_accurate = 86
             moveY = 1.75
             moveY_increasePerShot = 0.0
         end
+
     elseif weapong == "M4" then -- TODO: Tune values for M4
         if fireMode == "auto" then
             timePerShot_accurate = 86 -- accurate: 85.71
@@ -83,6 +87,7 @@ end
 
 
 function Rounding(value) -- because LUA doesn't have rounding implemented
+    -- TODO: Confirm that rounding works as excepted with different values
     value_floor = math.floor(value)
     value_ceil = math.ceil(value)
     if value_floor < (value - 0.5) then
@@ -271,7 +276,7 @@ function AutoFire()
     until shotCounter == magSize + 1 -- +1 includes last shot
 
     ReleaseMouseButton(mouseBind_fireInGame)
-    OutputLogMessage("Running Time: ".. (GetRunningTime() - sprayTimer_start) .." ms\n\n")
+    OutputLogMessage("AutoFire() Running Time: ".. (GetRunningTime() - sprayTimer_start) .." ms\n\n")
 
 end
 
