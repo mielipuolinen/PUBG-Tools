@@ -11,13 +11,17 @@
 -- Scope modes can be used when universal sensitivity is used in-game ("monitor distance sensitivity")
 -- All scopes work (except 1x with breath holding) automatically with 360deg/cm sensitivities
 
-mouseBind_activation = 6 -- 4: thumb near
-mouseBind_switchFireMode = 5 -- 5: thumb far
-mouseBind_switchScope = 3 -- 3: MMB
-mouseBind_switchStance = 6 -- 6: ???
+-- 1: LMB, 2: RMB, 3: MMB, 4: Thumb Near, 5: Thumb Far
+
+mouseBind_activation = 4 -- Activate recoil compensation
+mouseBind_switchFireMode = 5 -- Switch fire modes
+mouseBind_switchScope = 3 -- Switch scope settings (when using universal sensitivity in-game)
+mouseBind_switchStance = 99 -- Switch stance settings
+mouseBind_testPixelSkipping = 99 -- Run pixel skipping test
+mouseBind_testZoomAnimation = 99 -- Run zoom animation test
+
 mouseBind_fireInGame = 1 -- 1: LMB
 mouseBind_scopeInGame = 2 -- 2: RMB
-mouseBind_testPixelSkipping = 4
 keyBind_reloadInGame = "r"
 keyBind_holdBreathInGame = "lshift"
 
@@ -43,6 +47,7 @@ autoReload = false -- boolean
 autoScope = false -- boolean
 autoHoldBreath = false -- boolean
 magSize = 30
+toggleActivation = false -- boolean, toggle or hold for activation bind
 
 function SetDefaults()
     ClearLog()
@@ -146,6 +151,8 @@ function OnEvent(event, arg)
         SwitchStance()
     elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_testPixelSkipping ) then
         TestPixelSkipping()
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_testZoomAnimation ) then
+        TestZoomAnimation()
     end
 end
 
@@ -287,7 +294,8 @@ function AutoFire()
 
         Sleep(1)
 
-    until shotCounter == magSize + 1 -- +1 includes last shot
+    until not IsMouseButtonPressed(mouseBind_activation) or (shotCounter == magSize + 1) -- +1 includes last shot
+
 
     ReleaseMouseButton(mouseBind_fireInGame)
     OutputLogMessage("AutoFire() Running Time: ".. (GetRunningTime() - sprayTimer_start) .." ms\n\n")
@@ -456,4 +464,22 @@ function TestPixelSkipping()
     MoveMouseRelative(jumpSteps * -1, jumpSteps * -1)
 
     OutputLogMessage("TestPixelSkipping(): Finished")
+end
+
+
+function TestZoomAnimation()
+    OutputLogMessage("TestZoom()\n")
+
+    steps = 300
+    jumpSteps = 100
+    delay = 250 --ms
+    sleepDelay = 1 --ms
+
+    stepCount = 0
+    repeat
+        MoveMouseRelative(2,0)
+        Sleep(sleepDelay)
+        stepCount = stepCount + 1
+    until stepCount == steps
+
 end
