@@ -9,60 +9,73 @@
 -- Adjust mouseSensitivity to fit your mouse sensitivity settings
 -- Scope settings work only with universal sensitivity in-game
 
+-- Scope modes can be used when universal sensitivity is used in-game ("monitor distance sensitivity")
+-- All scopes work (except 1x with breath holding) automatically with 360deg/cm sensitivities
+
 mouseBind_activation = 4 -- 4: thumb near
-mouseBind_changeFireMode = 5 -- 5: thumb far
-mouseBind_changeScope = 3 -- 3: MMB
-mouseBind_changeStance = 6 -- 6: ???
+mouseBind_switchFireMode = 5 -- 5: thumb far
+mouseBind_switchScope = 3 -- 3: MMB
+mouseBind_switchStance = 6 -- 6: ???
 mouseBind_fireInGame = 1 -- 1: LMB
+mouseBind_scopeInGame = 2 -- 2: RMB
+keyBind_reloadInGame = "r"
+keyBind_holdBreathInGame = "lshift"
 
 mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with your sensitivity settings
 
-weapon = "Beryl" -- Beryl
+weapon = "Beryl" -- Beryl/M4
 fireMode = "auto" -- auto/single/burst
 scope = 1 -- 1/1.31/2/3/4/4.21/6/8/15 (1.31: 1x hold breath, 4.21: ACOG)
 stance = "stand" -- stand/crouch/prone
+autoReload = false -- boolean
+autoScope = false -- boolean
+autoHoldBreath = false -- boolean
+magSize = 30
+
 
 function SetDefaults()
     ClearLog()
 
     -- magSize: [pcs], shots to fire
-    -- timePerShot: [ms], rate of fire
+    -- timePerShot_accurate: [ms], rate of fire
     -- moveY: [%], vertical movement compensation per shot
     -- moveY_increasePerShot: [%], compensation increase per shot
+    -- moveY_increaseAfterShot: [pcs], starts increasing compensation after this shot by using moveY_increasePerShot
+    -- moveY_doubleIncreaseAfterShot: [pcs], doubles compensation increasement after this shot
+    -- moveY_stopIncreaseAfterShot: [pcs], stops compensation increasement after this shot
 
     if weapon == "Beryl" then
         if fireMode == "auto" then
-            magSize = 30
-            timePerShot = 86 -- accurate: 85.71
-            moveY = 1.9
-            moveY_increasePerShot = 0.021 -- NOTE: probably should be checked again
+            timePerShot_accurate = 85.71
+            moveY = 1.61 --1.9
+            moveY_increasePerShot = 0.056 -- 0.021 -- NOTE: probably should be checked again
+            moveY_increaseAfterShot = 5 -- how many shots before increasing compensation per shot
+            moveY_doubleIncreaseAfterShot = 99 --unused
+            moveY_stopIncreaseAfterShot = 16
         elseif fireMode == "single" then
-            magSize = 30
-            timePerShot = 110
+            timePerShot_accurate = 110
             moveY = 1.75
             moveY_increasePerShot = 0.0
         elseif fireMode == "burst" then
-            magSize = 30
-            timePerShot = 86
+            timePerShot_accurate = 86
             moveY = 1.75
             moveY_increasePerShot = 0.0
         end
     elseif weapong == "M4" then -- TODO: Tune values for M4
         if fireMode == "auto" then
-            magSize = 30
-            timePerShot = 86 -- accurate: 85.71
+            timePerShot_accurate = 86 -- accurate: 85.71
             moveY = 1.9
             moveY_increasePerShot = 0.021 -- NOTE: probably should be checked again
         elseif fireMode == "single" then
-            magSize = 30
-            timePerShot = 110
+            timePerShot_accurate = 110
             moveY = 1.75
             moveY_increasePerShot = 0.0
         end
     end
 
-    scopeFactor = ChangeScope()
-    stanceFactor = ChangeStance()
+    timePerShot = Rounding(timePerShot_accurate)
+    scopeFactor = CalculateScope()
+    stanceFactor = CalculateStance()
     moveY = Rounding( moveY * mouseSensitivity * scopeFactor * stanceFactor )
     moveY_increasePerShot = Rounding( moveY * moveY_increasePerShot )
     mouseTimer_offset = Rounding( timePerShot / 2  )
@@ -80,11 +93,11 @@ function Rounding(value) -- because LUA doesn't have rounding implemented
 end
 
 
-function ChangeScope()
+function CalculateScope()
     -- default ADS FOV is 72
     -- eg. 1x Red Dot is 72 FOV and holding breath decreases FOV to 55
     -- 72/55 = 1,309.. => 72/1,31 = 54,96..
-    if scope == 1 then
+    if     scope == 1    then
         return scope
     elseif scope == 1.31 then -- hold breath (72FOV/55FOV)
         return scope * 1.11
@@ -94,72 +107,111 @@ function ChangeScope()
 end
 
 
-function ChangeStance() -- NOTE: May be little accurate (due to moveY & increasePerShot, etc.)
-    if stance == "stand" then
+function CalculateStance() -- NOTE: May be a bit inaccurate estimation (due to moveY & increasePerShot, etc.)
+    if     stance == "stand"  then
         return 1
     elseif stance == "crouch" then
         return 0.76
-    elseif stance == "prone" then
+    elseif stance == "prone"  then
         return 0.52
     end
 end
 
 
 function OnEvent(event, arg)
-    if (event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_activation) then
-        SetDefaults()
-        if fireMode == "auto" then
-            AutoFire()
-        elseif fireMode == "single" then
-            SingleFire()
-        elseif fireMode == "burst" then
-            BurstFire()
-        end
+    if     ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_activation     ) then
+        TriggerAction()
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchFireMode ) then
+        SwitchFireMode()
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchScope    ) then
+        SwitchScope()
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_switchStance   ) then
+        SwitchStance()
+    end
+end
 
-    elseif (event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_changeFireMode) then
-        if fireMode == "auto" then
-            fireMode = "single"
-        elseif fireMode == "single" then
-            fireMode = "burst"
-        elseif fireMode == "burst" then
-            fireMode = "auto"
-        end
 
-        OutputLogMessage("\nSwitching Fire Mode to: " .. fireMode .. "\n")
+function SwitchFireMode()
+    if     fireMode == "auto"   then
+        fireMode = "single"
+    elseif fireMode == "single" then
+        fireMode = "burst"
+    elseif fireMode == "burst"  then
+        fireMode = "auto"
+    end
 
-    elseif (event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_changeScope) then
-        if scope == 1 then
-            scope = 1.31
-        elseif scope == 1.31 then
-            scope = 2
-        elseif scope == 2 then
-            scope = 3
-        elseif scope == 3 then
-            scope = 4
-        elseif scope == 4 then
-            scope = 4.21
-        elseif scope == 4.21 then
-            scope = 6
-        elseif scope == 6 then
-            scope = 8
-        elseif scope == 8 then
-            scope = 15
-        elseif scope == 15 then
-            scope = 1
-        end
+    OutputLogMessage("\nSwitching Fire Mode to: " .. fireMode .. "\n")
+end
 
-        OutputLogMessage("\nChanging Scope to: " .. scope .. "\n")
 
-    elseif (event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_changeStance) then
-        if stance == "stand" then
-            stance = "crouch"
-        elseif stance == "crouch" then
-            stance = "prone"
-        elseif stance == "prone" then
-            stance = "stand"
-        end
+function SwitchScope()
+    if     scope == 1    then
+        scope = 1.31
+    elseif scope == 1.31 then
+        scope = 2
+    elseif scope == 2    then
+        scope = 3
+    elseif scope == 3    then
+        scope = 4
+    elseif scope == 4    then
+        scope = 4.21
+    elseif scope == 4.21 then
+        scope = 6
+    elseif scope == 6    then
+        scope = 8
+    elseif scope == 8    then
+        scope = 15
+    elseif scope == 15   then
+        scope = 1
+    end
 
-        OutputLogMessage("\nSwitching Stance to: " .. stance .. "\n")
+    OutputLogMessage("\nSwitching Scope to: " .. scope .. "\n")
+end
+
+
+function SwitchStance()
+    if     stance == "stand"  then
+        stance = "crouch"
+    elseif stance == "crouch" then
+        stance = "prone"
+    elseif stance == "prone"  then
+        stance = "stand"
+    end
+
+    OutputLogMessage("\nSwitching Stance to: " .. stance .. "\n")
+end
+
+
+function TriggerAction()
+    SetDefaults()
+
+    if autoScope then
+        PressAndReleaseMouseButton(mouseBind_scopeInGame)
+        Sleep(500)
+    end
+
+    if autoHoldBreath then
+        PressKey(keyBind_holdBreathInGame)
+        Sleep(100)
+    end
+
+    if     fireMode == "auto"   then
+        AutoFire()
+    elseif fireMode == "single" then
+        SingleFire()
+    elseif fireMode == "burst"  then
+        BurstFire()
+    end
+
+    if autoHoldBreath then
+        ReleaseKey(keyBind_holdBreathInGame)
+    end
+    if autoScope then
+        PressAndReleaseMouseButton(mouseBind_scopeInGame)
+        Sleep(100)
+    end
+    if autoReload then
+        PressAndReleaseKey(keyBind_reloadInGame)
     end
 end
 
@@ -176,6 +228,10 @@ function AutoFire()
     sprayTimer_start = GetRunningTime()
     shotCounter = 1
 
+    moveY_steps = 4
+    moveY_sleepPerStep = 3
+    moveY_movePerStep = math.floor( moveY / moveY_steps )
+
     repeat
 
         sprayTimer = GetRunningTime() - sprayTimer_start
@@ -190,9 +246,22 @@ function AutoFire()
             OutputLogMessage("\t\t actual shot: " .. actualTimer_f .. " - " .. actualTimer_c .. " ms\n")
             OutputLogMessage("\t sprayTimer: " .. sprayTimer .. " ms\t sprayTimer_start: " .. sprayTimer_start .. " ms\n")
 
-            MoveMouseRelative(0,moveY)
+            for i = 1, moveY_steps, 1 do
+                MoveMouseRelative(0, moveY_movePerStep)
+                Sleep(moveY_sleepPerStep)
+            end
+            
+            moveY_lastStep = moveY - (moveY_steps * moveY_movePerStep)
+            MoveMouseRelative(0, moveY_lastStep)
+            
+            if moveY_stopIncreaseAfterShot <= shotCounter then
+              -- do nothing
+            elseif moveY_doubleIncreaseAfterShot <= shotCounter then
+              moveY = moveY + moveY_increasePerShot + moveY_increasePerShot
+            elseif moveY_increaseAfterShot <= shotCounter then
+              moveY = moveY + moveY_increasePerShot
+            end
 
-            moveY = moveY + moveY_increasePerShot
             shotCounter = shotCounter + 1
 
         end
@@ -202,6 +271,7 @@ function AutoFire()
     until shotCounter == magSize + 1 -- +1 includes last shot
 
     ReleaseMouseButton(mouseBind_fireInGame)
+    OutputLogMessage("Running Time: ".. (GetRunningTime() - sprayTimer_start) .." ms\n\n")
 
 end
 
