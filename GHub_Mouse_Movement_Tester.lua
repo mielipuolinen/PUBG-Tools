@@ -11,6 +11,8 @@
 -- Scope modes can be used when universal sensitivity is used in-game ("monitor distance sensitivity")
 -- All scopes work (except 1x with breath holding) automatically with 360deg/cm sensitivities
 
+-- https://github.com/jehillert/logitech-ghub-lua-cheatsheet
+
 -- Mouse Binds For This Script:
 -- 1: LMB, 2: RMB, 3: MMB, 4: Thumb Near, 5: Thumb Far, 99: Non-Allocated
 mouseBind_activation        = 4     -- Activate recoil compensation
@@ -19,6 +21,7 @@ mouseBind_switchScope       = 3     -- Switch scope settings (when using univers
 mouseBind_switchStance      = 99    -- Switch stance settings
 mouseBind_testPixelSkipping = 99    -- Run pixel skipping test
 mouseBind_testZoomAnimation = 99    -- Run zoom animation test
+mouseBind_autoClicker       = 99    -- Activate non-compensating auto clicker
 
 mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with your sensitivity settings
 -- My in-game sensitivity settings (1000dpi):
@@ -34,7 +37,7 @@ mouseSensitivity = 50 -- [1..n], adjust this factor for the script to work with 
 -- (SensitiveName="Scope15X",Sensitivity=75.709628,LastConvertedSensitivity=0.065347))))),
 -- MouseVerticalSensitivityMultiplierAdjusted=1.000000
 
-weapon           = "Beryl"  -- [Beryl|M4]
+weapon           = "M416"  -- [Beryl|M416]
 fireMode         = "auto"   -- [auto|single|burst]
 magSize          = 30       -- [1..n]
 scope            = 1        -- [1|1.31|2|3|4|4.21|6|8|15]   1.31: 1x hold breath, 4.21: ACOG
@@ -68,22 +71,70 @@ function SetDefaults()
             moveY_increaseAfterShot = 5
             moveY_stopIncreaseAfterShot = 16
         elseif fireMode == "single" then
-            moveY = 1.75
-            moveY_increasePerShot = 0.0
-        elseif fireMode == "burst" then
-            moveY = 1.75
+            moveY = 1.35
+        elseif fireMode == "burst" then -- TODO: Tuning
+            moveY = 1.35
+        end
+
+    elseif weapon == "M416" then -- TODO: Tuning
+        timePerShot_accurate = 85.7
+        if fireMode == "auto" then
+            moveY = 1.61
+            moveY_increasePerShot = 0.056
+            moveY_increaseAfterShot = 5
+            moveY_stopIncreaseAfterShot = 16
+        elseif fireMode == "single" then
+            moveY = 1.35
             moveY_increasePerShot = 0.0
         end
 
-    elseif weapong == "M4" then -- TODO: Tune values for M4
-        if fireMode == "auto" then
-            timePerShot_accurate = 86 -- accurate: 85.71
-            moveY = 1.9
-            moveY_increasePerShot = 0.021 -- NOTE: probably should be checked again
-        elseif fireMode == "single" then
-            timePerShot_accurate = 110
-            moveY = 1.75
-            moveY_increasePerShot = 0.0
+    elseif weapon == "SKS" then -- TODO: Tuning
+        timePerShot_accurate = 100
+        if fireMode == "single" then
+            moveY = 1.61
+            moveY_increasePerShot = 0.056
+            moveY_increaseAfterShot = 5
+            moveY_stopIncreaseAfterShot = 16
+        end
+
+    elseif weapon == "SLR" then -- TODO: Tuning
+        timePerShot_accurate = 100
+        if fireMode == "single" then
+            moveY = 1.61
+            moveY_increasePerShot = 0.056
+            moveY_increaseAfterShot = 5
+            moveY_stopIncreaseAfterShot = 16
+        end
+
+    elseif weapon == "Mini-14" then -- TODO: Tuning
+        timePerShot_accurate = 100
+        if fireMode == "single" then
+            moveY = 1.61
+            moveY_increasePerShot = 0.056
+            moveY_increaseAfterShot = 5
+            moveY_stopIncreaseAfterShot = 16
+        end
+
+    elseif weapon == "Mutant" then -- TODO: Tuning
+        timePerShot_accurate = 100
+        if fireMode == "single" then
+            moveY = 1.61
+            moveY_increasePerShot = 0.056
+            moveY_increaseAfterShot = 5
+            moveY_stopIncreaseAfterShot = 16
+        elseif fireMode == "burst" then
+            moveY = 1.35
+        end
+
+    elseif weapon == "M249" then -- TODO: Tuning
+        timePerShot_accurate = 75
+        if fireMode == "single" then
+            moveY = 1.61
+            moveY_increasePerShot = 0.056
+            moveY_increaseAfterShot = 5
+            moveY_stopIncreaseAfterShot = 16
+        elseif fireMode == "burst" then
+            moveY = 1.35
         end
     end
 
@@ -95,17 +146,14 @@ function SetDefaults()
     mouseTimer_offset = Rounding( timePerShot / 2  )
 end
 
-
-function Rounding(value) -- because LUA doesn't have rounding implemented
-    -- TODO: Confirm that rounding works as excepted with different values
-    value_floor = math.floor(value)
-    value_ceil = math.ceil(value)
-    if value_floor < (value - 0.5) then
-        return value_ceil
+function Rounding(value)
+    if value >= 0 then
+        return math.floor(value + 0.5)
     else
-        return value_floor
+        return math.ceil(value - 0.5)
     end
 end
+
 
 
 function CalculateScope()
@@ -146,6 +194,8 @@ function OnEvent(event, arg)
         TestPixelSkipping()
     elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_testZoomAnimation ) then
         TestZoomAnimation()
+    elseif ( event == "MOUSE_BUTTON_PRESSED" and arg == mouseBind_autoClicker       ) then
+        AutoClicker()
     end
 end
 
@@ -360,7 +410,7 @@ end
 
 function BurstFire()
 
-    OutputLogMessage("BurstFire():\n")
+    OutputLogMessage("SingleFire():\n")
     OutputLogMessage("magSize: " .. magSize .. " pcs, timePerShot: " .. timePerShot)
     OutputLogMessage(" ms, mouseTimer_offset: " .. mouseTimer_offset)
     OutputLogMessage(" ms, moveY: " .. moveY .. " px, moveY_increasePerShot: " .. moveY_increasePerShot)
@@ -369,32 +419,54 @@ function BurstFire()
     sprayTimer_start = GetRunningTime()
     shotCounter = 1
 
+    moveY_steps = 4
+    moveY_sleepPerStep = 3
+    moveY_movePerStep = math.floor( moveY / moveY_steps )
+
     repeat
 
         sprayTimer = GetRunningTime() - sprayTimer_start
-        shootTimer = shotCounter * timePerShot
+        mouseTimer = (shotCounter * timePerShot)
 
-        if sprayTimer >= shootTimer then
+        if sprayTimer >= mouseTimer then
 
-            actualTimer_f = math.floor(shotCounter * 85.71 - 85.71)
-            actualTimer_c = math.ceil(shotCounter * 85.71 - 85.71)
+            actualTimer_f = math.floor(shotCounter * timePerShot_accurate - timePerShot_accurate)
+            actualTimer_c = math.ceil(shotCounter * timePerShot_accurate - timePerShot_accurate)
             OutputLogMessage(shotCounter .. "/" .. magSize)
-            OutputLogMessage("\t moveY: " .. moveY .. " px\t\t shootTimer: " .. shootTimer .. " ms")
+            OutputLogMessage("\t moveY: " .. moveY .. " px\t\t mouseTimer: " .. mouseTimer .. " ms")
             OutputLogMessage("\t\t actual shot: " .. actualTimer_f .. " - " .. actualTimer_c .. " ms\n")
             OutputLogMessage("\t sprayTimer: " .. sprayTimer .. " ms\t sprayTimer_start: " .. sprayTimer_start .. " ms\n")
 
-            PressAndReleaseMouseButton(mouseBind_fireInGame)
-            Sleep(mouseTimer_offset) -- A short delay before compensating the recoil
-            MoveMouseRelative(0,moveY)
+            PressMouseButton(mouseBind_fireInGame)
+            Sleep(math.random(10,20))
+            ReleaseMouseButton(mouseBind_fireInGame)
+            Sleep(mouseTimer_offset)
 
-            moveY = moveY + moveY_increasePerShot
+            for i = 1, moveY_steps, 1 do
+                MoveMouseRelative(0, moveY_movePerStep)
+                Sleep(moveY_sleepPerStep)
+            end
+
+            moveY_lastStep = moveY - (moveY_steps * moveY_movePerStep)
+            MoveMouseRelative(0, moveY_lastStep)
+            
+            if moveY_stopIncreaseAfterShot <= shotCounter then
+              -- do nothing
+            elseif moveY_doubleIncreaseAfterShot <= shotCounter then
+              moveY = moveY + moveY_increasePerShot + moveY_increasePerShot
+            elseif moveY_increaseAfterShot <= shotCounter then
+              moveY = moveY + moveY_increasePerShot
+            end
+
             shotCounter = shotCounter + 1
 
         end
 
         Sleep(1)
 
-    until shotCounter == magSize + 1 -- +1 includes last shot
+    until not IsMouseButtonPressed(mouseBind_activation) or (shotCounter == magSize + 1) -- +1 includes last shot
+
+    OutputLogMessage("AutoFire() Running Time: ".. (GetRunningTime() - sprayTimer_start) .." ms\n\n")
 
 end
 
@@ -496,4 +568,14 @@ function TestZoomAnimation()
         stepCount = stepCount + 1
     until stepCount == steps
 
+end
+
+
+function AutoClicker()
+    repeat
+        PressMouseButton(mouseBind_fireInGame)
+        Sleep(math.random(10,20))
+        ReleaseMouseButton(mouseBind_fireInGame)
+        Sleep(math.random(110,130))
+    until not IsMouseButtonPressed(mouseBind_autoClicker)
 end
