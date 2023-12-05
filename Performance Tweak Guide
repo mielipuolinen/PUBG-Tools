@@ -4,6 +4,7 @@ PUBG Performance Tweak Guide
 OS Basics Checklist:
 - Stop being a moron, don't skip these
 - Reboot Windows EVERY day - Confirm that Task Manager shows zeroed uptime after restart
+- If you're using Windows 10, it's time to move on and upgrade to Windows 11
 
 1) Check for Windows updates
 2) Check for GPU driver updates & do a clean reinstall
@@ -132,28 +133,36 @@ PUBG, Optional startup parameteres:
 - nosplash -> no PUBG logo prompt at the start up
 
 
-VALID TOOLS FOR PERSONAL EXPERIMENTATION:
+SOME TOOLS FOR PERSONAL EXPERIMENTATION:
 --
 
 ISLC For Low-End PCs [Experimental, unclear suitability]:
 - Clears standby ("cache") memory on a timed interval
-- https://www.wagnardsoft.com/forums/viewtopic.php?t=1256
-+ May ease stuttering for lower end PCs
+- May ease stuttering for lower end PCs
+- Read more at https://www.wagnardsoft.com/forums/viewtopic.php?t=1256
 
 Process Lasso:
-- Useful all-around tool
+- Useful all-around tool for managing computer resources
 - Requires a license - relatively inexpensive
+- Shouldn't be needed for Windows 11 with Intel CPUs
+- Read more at https://bitsum.com/get-lasso-pro/
 
-Cloudflare WARP:
+Cloudflare WARP+:
 - May help with network/ping/latency issues
 - It's a VPN product and may be useful with cheap home network devices
+- Subscription 5$/mo, subscribe via phone app & copy license key
+- Read more at https://1.1.1.1
+
+Windows, Disable Virtual-Based Security & Memory Integrity:
+- At your own risk - Weakens the security of your computer
+- Disabling should give a small performance boost for your CPU
+- Note that VBS is required for virtualization features
+- Read more at https://www.tomshardware.com/news/windows-11-gaming-benchmarks-performance-vbs-hvci-security
 
 
 
-EXPERIMENTAL & OTHER MISC. NOTES. PROBABLY SHOULDN'T TRY THESE:
+EXPERIMENTAL & OTHER MISC. NOTES:
 ---
-
-Process Lasso
 
 Visual C++ Redistributable:
 https://aka.ms/vs/17/release/vc_redist.x64.exe
@@ -162,48 +171,6 @@ https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=ms
 .NET 6.0 runtime:
 https://dotnet.microsoft.com/en-us/download/dotnet/thank-you/runtime-desktop-6.0.10-windows-x64-installer
 https://dotnet.microsoft.com/en-us/download/dotnet/6.0
-
-r.Tonemapper.Sharpen ? 1,3,5,10?:
-Engine.ini:
-[/Script/Engine.RendererSettings]
-r.Tonemapper.Sharpen=1
-
-AA low vs high fps?
-
-Some random oldschool configs:
-[/Script/Engine.RendererSettings]
-r.DefaultFeature.Bloom=False
-r.DefaultFeature.AmbientOcclusion=False
-r.DefaultFeature.AmbientOcclusionStaticFraction=False
-r.DefaultFeature.AutoExposure=False
-r.DefaultFeature.MotionBlur=False
-r.DepthOfFieldQuality=0
-r.DepthOfField.MaxSize=0
-r.SwitchGridShadow=0
-r.Streaming.Boost=0
-r.Streaming.PoolSize=0
-r.Streaming.LimitPoolSizeToVRAM=1
-r.Streaming.DefragDynamicBounds=1
-r.Streaming.HLODStrategy=2
-r.Streaming.FullyLoadUsedTextures=1
-r.bForceCPUAccessToGPUSkinVerts=True
-r.CreateShadersOnLoad=1
-r.Shaders.Optimize=1
-r.Shaders.FastMath=1
-r.UseShaderCaching=1
-r.UseShaderPredraw=1
-r.TargetPrecompileFrameTime=13
-r.PredrawBatchTime=13
-r.AccelPredrawBatchTime=0
-r.AccelTargetPrecompileFrameTime=0
-r.Streaming.FramesForFullUpdate=60
-r.FinishCurrentFrame=0
-
-[/Script/TslGame.TslEngine]
-FrameRateCap=0
-
-[SystemSettings]
-OneFrameThreadLag=1
 
 Inventory screen character render disable?
 + Potentially better performance
