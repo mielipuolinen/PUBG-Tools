@@ -127,14 +127,27 @@ PUBG, Render Scale tuning: [Experimental, wrongly configured may cause severe pe
 2) NVIDIA Control Panel > Manage 3D Settings > Program Settings > Select a program to customise: tslgame.exe > Antialiasing - Mode: Off
 + Mostly a personal preference, but may provide better and "more accurate" image quality due to not using AA.
 
+PUBG, Optional startup parameteres:
+- koreanrating -> blood is green
+- nosplash -> no PUBG logo prompt at the start up
+
+
+VALID TOOLS FOR PERSONAL EXPERIMENTATION:
+--
+
 ISLC For Low-End PCs [Experimental, unclear suitability]:
 - Clears standby ("cache") memory on a timed interval
 - https://www.wagnardsoft.com/forums/viewtopic.php?t=1256
 + May ease stuttering for lower end PCs
 
-PUBG, Optional startup parameteres:
-- koreanrating -> blood is green
-- nosplash -> no PUBG logo prompt at the start up
+Process Lasso:
+- Useful all-around tool
+- Requires a license - relatively inexpensive
+
+Cloudflare WARP:
+- May help with network/ping/latency issues
+- It's a VPN product and may be useful with cheap home network devices
+
 
 
 EXPERIMENTAL & OTHER MISC. NOTES. PROBABLY SHOULDN'T TRY THESE:
