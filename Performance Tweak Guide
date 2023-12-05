@@ -3,15 +3,15 @@ PUBG Performance Tweak Guide
 
 OS Basics Checklist:
 - Stop being a moron, don't skip these
-- Reboot Windows at least every few days
+- Reboot Windows EVERY day - Confirm that Task Manager shows zeroed uptime after restart
 
 1) Check for Windows updates
 2) Check for GPU driver updates & do a clean reinstall
-- NOTE: Clean reinstall will remove existing game settings
+- NOTE: Clean reinstall WILL remove existing game-specific driver settings
 3) Check for other device drivers (MOBO, UEFI, etc.)
 4) Check OS and PUBG is on SSD with at least 20% free space (absolute minimum 10%)
 - If you need to make space, trim the SSD afterwards (Optimise Drives)
-5) Run SFC & DISM:
+5) Run SFC & DISM (system health check tools):
 - Open CMD as Admin and run the following commands TWICE. If errors still left, plan for Windows reinstallation.
 - - sfc /scannow
 - - dism /Online /Cleanup-Image /RestoreHealth
@@ -22,7 +22,7 @@ OS Basics Checklist:
 7) Disable Xbox Game Bar
 - Search Game Mode > Xbox Game Bar
 + Disables an unnecessary background service for PUBG
-8) Experiment with Hardware-accelerated GPU scheduling setting
+8) Experiment with Hardware-accelerated GPU scheduling setting [ This is experimental and can be skipped ]
 - Search Graphics Settings
 + May fix some stuttering issues in PUBG
 9) Disable variable refresh rate [ This is experimental and can be skipped ]
@@ -42,7 +42,7 @@ OS Basics Checklist:
 - If you have less than 20GB RAM or run special high memory usage applications, set (x) System managed size.
 + May help with unnecessary virtual memory usage, which is slower than normal memory
 
-PUBG, Wellbia Anticheat Uninstallation:
+PUBG, Wellbia Anticheat Uninstallation [ This is experimental and can be skipped ]:
 1) Delete C:\Windows\xhunter1.sys
 2) Delete C:\Program Files\Common Files\Uncheater
 3) Find and delete registry entries with keywords "xhunter" and "ucldr"
@@ -76,9 +76,8 @@ PUBG, Remove Video Files:
 1) Delete C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Content\Movies
 + Faster startup of PUBG
 
-PUBG, Disable Full-Screen Optimisations:
-- NOTE: Try with both settings
-1) C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64 > Right Click: Properties > Compatibility > [x] Disable full-screen optimisations
+PUBG, Experiment with Full-Screen Optimisations [ This is experimental and can be skipped ]:
+1) C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64 > Right Click: Properties > Compatibility > Enable or Disable full-screen optimisations
 + May fix some stuttering issues
 
 PUBG, Reinstall Game:
@@ -98,7 +97,7 @@ PUBG, Set Up GSYNC:
 - [x] Enable G-SYNC, G-SYNC Compatible
 - (x) Enable for full screen mode
 2) NVIDIA Control Panel > Manage 3D settings > Program Settings > Select a program to customise: tslgame.exe
-- Low Latency Mode: Ultra
+- Low Latency Mode: Ultra [Optionally set: On]
 - Max Frame Rate: Off
 - Monitor Technology: G-SYNC
 - Power management mode: Prefer maximum performance
@@ -109,14 +108,14 @@ PUBG, Set Up GSYNC:
 - - 144hz -> 130FPS
 - - 165hz -> 150FPS
 - - 240hz -> 220FPS
-- - Optionally lower framelimit to ~90% avg FPS
+- - Optionally lower framelimit to ~90% avg FPS [ You may use CapframeX to determine your actual average FPS in-game ]
 - Lobby Framelimit: 60 FPS
 - Vertical Sync: Off
 4) Windows Advanced Display Settings:
 - Refresh Rate: Select Highest
 + Provides smoother performance
 
-PUBG, Use DirectX 11:
+PUBG, Use DirectX 11e:
 + Should provide overall smoother game experience
 
 PUBG, Render Scale tuning: [Experimental, wrongly configured may cause severe performance issues]
@@ -140,6 +139,8 @@ PUBG, Optional startup parameteres:
 
 EXPERIMENTAL & OTHER MISC. NOTES. PROBABLY SHOULDN'T TRY THESE:
 ---
+
+Process Lasso
 
 Visual C++ Redistributable:
 https://aka.ms/vs/17/release/vc_redist.x64.exe
