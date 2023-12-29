@@ -80,6 +80,7 @@ PUBG, Remove Video Files:
 PUBG, Experiment with Full-Screen Optimisations [ This is experimental and can be skipped ]:
 1) C:\Program Files (x86)\Steam\steamapps\common\PUBG\TslGame\Binaries\Win64 > Right Click: Properties > Compatibility > Enable or Disable full-screen optimisations
 + May fix some stuttering issues
++ Disabling may fix Shadowplay recording framerate issues with 240Hz+ GSync [pekimon]
 
 PUBG, Reinstall Game:
 - TODO: Add steps for uninstalling Anticheats etc.
